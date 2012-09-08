@@ -1,17 +1,5 @@
-This is a mirror of http://www.vim.org/scripts/script.php?script_id=3461
+This is based on this python indent plugin:
+http://www.vim.org/scripts/script.php?script_id=3461
 
-modify from http://www.vim.org/scripts/script.php?script_id=974, fix it's bugs,such as:
-
-def fun(
-    a,
-    b
-):
-    print a,b
-
-to:
-
-def fun(
-    a,
-    b
-    ):
-    print a,b
+My fork has some local modifications that fix annoyances that I've had with the
+original.
