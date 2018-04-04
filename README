@@ -1,5 +1,8 @@
-This is based on this python indent plugin:
-http://www.vim.org/scripts/script.php?script_id=3461
+This is a hybrid plugin based on these python indent plugins:
 
-My fork has some local modifications that fix annoyances that I've had with the
-original.
+http://www.vim.org/scripts/script.php?script_id=974
+
+http://www.vim.org/scripts/script.php?script_id=3461 + plus some Valloric sauce
+
+With the `g:indentpython_nianyang` flag, you can choose to have the nianyang
+fix enabled or not; default enabled.

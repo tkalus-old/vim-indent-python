@@ -39,6 +39,11 @@ if exists("b:did_indent")
 endif
 let b:did_indent = 1
 
+" Allow user to disable the nianyang+Valloric mods.
+if !exists("g:vim_indent_python_nianyang")
+    let g:vim_indent_python_nianyang = 1
+endif
+
 setlocal expandtab
 setlocal nolisp
 setlocal autoindent
@@ -152,59 +157,63 @@ function! GetPythonIndent(lnum)
         let closing_paren = match(getline(a:lnum), '^\s*[])}]') != -1
         if match(getline(parlnum), '[([{]\s*$', parcol - 1) != -1
             if closing_paren
-                "Mod-Begin by dantezhu in 2011-02-21 23:38:24
-                "FROM
-                "return indent(parlnum)
-                "TO
-                "为了支持如下的格式:
-                "def fun(
-                "    a,
-                "    b
-                "    ):
-                "    print a,b
-                "又不影响如下格式:
-                "val = {
-                "    (
-                "        1,
-                "        2
-                "    ):1
-                "}
-
-                "Add-Begin by dantezhu in 2011-02-26 23:23:08
-                "增加了对
-                "x = user.getdata1_(
-                "   a,
-                "   b,
-                "   c
-                "   )
-                "的支持
-                if match(getline(parlnum), '\(\a\|\d\|_\)\s*(\s*$', 0) != -1
-                    "增加了对
-                    "x(
-                    "    1,
-                    "    2,
-                    "    3
-                    " )
-                    "user.login(
-                    "    1,
-                    "    2,
-                    "    3
-                    "    )
-                    " 的支持
-                    if (parcol -1 - indent(parlnum)) < 4
-                        return parcol - 1
-                    else
-                        return indent(parlnum) + &sw
-                    endif
-                endif
-                "Add-End
-                if match(getline(a:lnum), ')\s*:') != -1 &&
-                            \ match(getline(parlnum), '\(def\|class\|if\|elif\|while\)\(\s\+\|(\)') != -1
-                    return indent(parlnum) + &sw
-                else
+                if !g:vim_indent_python_nianyang
                     return indent(parlnum)
+                else
+                    "Mod-Begin by dantezhu in 2011-02-21 23:38:24
+                    "FROM
+                    "return indent(parlnum)
+                    "TO
+                    "为了支持如下的格式:
+                    "def fun(
+                    "    a,
+                    "    b
+                    "    ):
+                    "    print a,b
+                    "又不影响如下格式:
+                    "val = {
+                    "    (
+                    "        1,
+                    "        2
+                    "    ):1
+                    "}
+
+                    "Add-Begin by dantezhu in 2011-02-26 23:23:08
+                    "增加了对
+                    "x = user.getdata1_(
+                    "   a,
+                    "   b,
+                    "   c
+                    "   )
+                    "的支持
+                    if match(getline(parlnum), '\(\a\|\d\|_\)\s*(\s*$', 0) != -1
+                        "增加了对
+                        "x(
+                        "    1,
+                        "    2,
+                        "    3
+                        " )
+                        "user.login(
+                        "    1,
+                        "    2,
+                        "    3
+                        "    )
+                        " 的支持
+                        if (parcol -1 - indent(parlnum)) < 4
+                            return parcol - 1
+                        else
+                            return indent(parlnum) + &sw
+                        endif
+                    endif
+                    "Add-End
+                    if match(getline(a:lnum), ')\s*:') != -1 &&
+                                \ match(getline(parlnum), '\(def\|class\|if\|elif\|while\)\(\s\+\|(\)') != -1
+                        return indent(parlnum) + &sw
+                    else
+                        return indent(parlnum)
+                    endif
+                    "Mod-End
                 endif
-                "Mod-End
             else
                 return indent(parlnum) + &sw
             endif
@@ -273,15 +282,19 @@ function! GetPythonIndent(lnum)
         " If the previous line ended with a colon, indent relative to
         " statement start.
         if pline =~ ':\s*$'
-            "Mod-Begin by dantezhu in 2011-02-24 19:30:52
-            "FROM
-            "return indent(sslnum) + &sw
-            "TO
-            let t_col = match(pline,':\s*$')+1
-            if synIDattr(synID(a:lnum-1, t_col, 1), 'name') !~ '\(Comment\|String\)$'
-                return indent(sslnum) + &sw
+            if !g:vim_indent_python_nianyang
+                return indent(sslnum + &sw)
+            else
+                "Mod-Begin by dantezhu in 2011-02-24 19:30:52
+                "FROM
+                "return indent(sslnum) + &sw
+                "TO
+                let t_col = match(pline,':\s*$')+1
+                if synIDattr(synID(a:lnum-1, t_col, 1), 'name') !~ '\(Comment\|String\)$'
+                    return indent(sslnum) + &sw
+                endif
+                "Mod-End
             endif
-            "Mod-End
         endif
 
         " If the previous line was a stop-execution statement or a pass
